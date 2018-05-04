@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="row">
                 <div class="content-pane">
-                    <div></div>
+                    <div id="messages-list"></div>
                 </div>
             </div>
             <div class="col-12 p-0 mt-4">
@@ -23,6 +23,19 @@
 <script>
     $(document).ready(function () {
         let connection = new WebSocket("ws://localhost:8000/ws/chat/{{room_name}}")
+
+        connection.onmessage = function(response) {
+            let data = JSON.parse(response.data);
+            if (data.success) {
+                if (data.notification) {
+                    let messageDiv = $("<div></div");
+                    messageDiv.addClass("notification");
+                    messageDiv.text(data.notification);
+                    $("#messages-list").append(messageDiv);
+                    
+                }
+            }
+        }
 
 
     });
