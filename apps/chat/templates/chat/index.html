@@ -11,7 +11,7 @@
             </div>
             <div class="col-12 p-0 mt-4">
                 <form action="">
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" id="send-message">
                 </form>
             </div>
         </div>
@@ -24,6 +24,17 @@
     $(document).ready(function () {
         let connection = new WebSocket("ws://localhost:8000/ws/chat/{{room_name}}")
 
+        $("#send-message").keypress(function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault()
+                let message = {
+                    "message": $(this).val(),
+                };
+                connection.send(JSON.stringify(message));
+                $(this).val(null);
+            }
+        });
+
         connection.onmessage = function(response) {
             let data = JSON.parse(response.data);
             if (data.success) {
@@ -32,12 +43,24 @@
                     messageDiv.addClass("notification");
                     messageDiv.text(data.notification);
                     $("#messages-list").append(messageDiv);
-                    
+
+                } else if (data.message) {
+                    let userSpan = createElement("span", data.username + ": ", ["username"]);
+                    let messageSpan = createElement("span", data.message, ["username"]);
+                    let messageDiv = createElement("div", null, ["message"]);
+                    messageDiv.append(userSpan).append(messageSpan);
+                    messageDiv.appendTo("#messages-list");
                 }
+
+                $(".content-pane").animate({
+                    scrollTop: $(".content-pane").prop("scrollHeight")
+                    
+                }, 2000)
             }
         }
 
 
     });
+
 
 </script> {% endblock %}

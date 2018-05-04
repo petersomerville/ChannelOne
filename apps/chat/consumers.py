@@ -7,7 +7,6 @@ class ChatConsumer(JsonWebsocketConsumer):
 
     def connect(self):
         if 'user_id' in self.scope['session']:
-            print('CONNECTION FROM SOCKET INITIATED')
             self.accept()
             self.room_name = self.scope['url_route']['kwargs']['room_name']
 
@@ -30,14 +29,32 @@ class ChatConsumer(JsonWebsocketConsumer):
             self.close()
 
     def receive_json(self, content):
-        pass
+        broadcast_to = async_to_sync(self.channel_layer.group_send)
+        broadcast_to(self.room_name, {
+            'type': 'send.message',
+            'success': True,
+            'message': content.get('message', None),
+            'username': self.scope['session']['username']
+        })
 
     def disconnect(self, close_code):
-        pass
+        broadcast_to = async_to_sync(self.channel_layer.group_send)
+        broadcast_to(self.room_name, {
+            'type': 'send.notification',
+            'success': True,
+            'notification': '{} has left the room'.format(self.scope['session']['username'])
+        })
 
 
     def send_notification(self, event):
         self.send_json({
             'success': event['success'],
             'notification': event['notification']
+        })
+
+    def send_message(self, event):
+        self.send_json({
+            'success': event['success'], 
+            'message': event['message'],
+            'username': event['username'],
         })
