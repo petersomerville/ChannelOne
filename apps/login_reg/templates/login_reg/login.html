@@ -12,6 +12,7 @@
             <label for="inputPassword1">Password</label>
             <input type="password" class="form-control" id="inputPassword1" placeholder="Enter Password" name="html_password" value="">
         </div>
+        {% csrf_token %}
         <button type="submit" class="btn btn-primary">Login</button>
         <i class="fa fa-spinner ml-3 fa-spin" id="spinner" style="display: none"></i>
     </form>
@@ -43,7 +44,6 @@
             formFields.html_password = encryptPassword(formFields.html_password);
 
             $.ajax({
-                beforeSend: beforeAjaxSend,
                 type: "POST",
                 url: $("#login-form").attr("action"),
                 data: formFields,

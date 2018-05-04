@@ -1,0 +1,30 @@
+{% extends 'login_reg/base.html' %} {% block body %}
+
+<div class="container">
+    <div class="text-center">{{room_name}}</div>
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="content-pane">
+                    <div></div>
+                </div>
+            </div>
+            <div class="col-12 p-0 mt-4">
+                <form action="">
+                    <input type="text" class="form-control">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block scripts %}
+
+<script>
+    $(document).ready(function () {
+        let connection = new WebSocket("ws://localhost:8000/ws/chat/{{room_name}}")
+
+
+    });
+
+</script> {% endblock %}
